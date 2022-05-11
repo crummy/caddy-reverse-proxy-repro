@@ -1,0 +1,8 @@
+:80 {
+	handle_path /test/* {
+		reverse_proxy http://server
+	}
+	handle_path /test2/* {
+		reverse_proxy http://server
+	}
+}

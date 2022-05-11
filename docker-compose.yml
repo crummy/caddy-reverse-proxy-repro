@@ -1,0 +1,31 @@
+# rsync -r ./ ubuntu@nyc3.useast.cluster.ktbyte.com:/sync/caddy
+# ssh ubuntu@nyc3.useast.cluster.ktbyte.com
+# cd /sync/caddy
+# sudo docker-compose up -d
+
+version: '2.2'
+
+services:
+  caddy:
+    container_name: 'caddy-cluster-proxy'
+    image: 'caddy:2.5.1-alpine'
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    command: caddy run --config /etc/caddy/Caddyfile --watch
+  server:
+    image: python:3
+    container_name: 'file-server'
+    expose:
+      - 80
+    volumes:
+      - ./angular.min.js:/angular.min.js
+    command: python -m http.server 80
+
+volumes:
+  # Cached caddy data, e.g. certs
+  caddy_data:
